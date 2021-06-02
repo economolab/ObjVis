@@ -5,6 +5,10 @@ h = guidata(fig);
 varnames = getStructVarNames(h);
 for i = 1:numel(varnames)
     eval([varnames{i} ' = h.obj.bp.' varnames{i} ';']);
+    
+    if eval(['numel(' varnames{i} ')==h.obj.bp.Ntrials && isrow(' varnames{i} ')'])
+        eval([varnames{i} '=' varnames{i} ''';']);
+    end
 end
 
 h.filt.N = size(h.filterTable.Data, 1);

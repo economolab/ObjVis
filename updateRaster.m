@@ -2,7 +2,7 @@ function updateRaster(fig, clu)
 
 h = guidata(fig);
 
-hold(h.ax(1), 'Off');
+hold(h.ax(1), 'off');
 trialOffset = 0;
 
 tmin = str2double(get(h.tmin, 'String'));
@@ -19,7 +19,7 @@ for i = h.filt.N:-1:1
     
     plot(h.ax(1), clu.trialtm(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
     axis(h.ax(1), 'tight');
-    hold(h.ax(1), 'On');
+    hold(h.ax(1), 'on');
     
     sample = median(h.obj.bp.ev.sample(trix));
     delay = median(h.obj.bp.ev.delay(trix));

@@ -17,7 +17,7 @@ offset = str2double(get(h.vidOffset, 'String'));
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
 
-hold(h.ax(4), 'Off');
+hold(h.ax(4), 'off');
 yoff = 0;
 for i = 1:h.filt.N
     
@@ -47,7 +47,7 @@ for i = 1:h.filt.N
         end
         
         plot(h.ax(4), dat(:,1), yoff + dat(:,2), '-', 'Color', h.filt.clr(i,:));
-        hold(h.ax(4), 'On');
+        hold(h.ax(4), 'on');
         yoff = yoff+offset;
     end
 end

@@ -9,7 +9,7 @@ end
 
 ev = h.obj.bp.ev;
 
-hold(h.ax(3), 'Off');
+hold(h.ax(3), 'off');
 trialOffset = 0;
 
 tmin = str2double(get(h.tmin, 'String'));
@@ -36,7 +36,7 @@ for i = h.filt.N:-1:1
         plot(h.ax(3), [delay delay], trialOffset+[-0.5 0.5], 'c-', 'LineWidth', 1);
         plot(h.ax(3), [goCue goCue], trialOffset+[-0.5 0.5], 'y-', 'LineWidth', 1);
         
-        hold(h.ax(3), 'On');
+        hold(h.ax(3), 'on');
         
         if ~isempty(lickL)
             plot(h.ax(3), lickL, trialOffset*ones(size(lickL)), 'r.');

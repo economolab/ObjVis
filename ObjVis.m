@@ -1,6 +1,9 @@
 function ObjVis()
 close all;
 
+global spkOffset
+spkOffset = 0.5;
+
 bcol = [1 1 1];
 
 % Master Figure

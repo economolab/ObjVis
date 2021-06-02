@@ -11,7 +11,7 @@ dt = mean(diff(edges));
 tm = edges + dt./2;
 tm = tm(1:end-1);
 
-hold(h.ax(2), 'Off');
+hold(h.ax(2), 'off');
 
 sm = str2double(get(h.smoothing, 'String'));
 
@@ -30,7 +30,7 @@ for i = 1:h.filt.N
     psth = MySmooth(N./numel(trix)./dt, sm);
 
     plot(h.ax(2), tm, psth, '-', 'Linewidth', 2, 'Color', h.filt.clr(i,:));
-    hold(h.ax(2), 'On');
+    hold(h.ax(2), 'on');
     axis(h.ax(2), 'tight');
     
 end
