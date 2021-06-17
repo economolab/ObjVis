@@ -38,6 +38,7 @@ h.datafn = fullfile(pth, fn);
 % align event names
 f = h.obj.bp.ev;
 eventNames = fieldnames(f);
+eventNames{end+1} = 'moveOnset';
 set(h.alignMenu, 'Value', 1, 'String', eventNames);
 
 

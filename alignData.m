@@ -6,6 +6,9 @@ h.align = 1;
 probe = get(h.probeList, 'Value');
 evList = get(h.alignMenu, 'String');
 evName = evList{get(h.alignMenu, 'Value')};
+if strcmp(evName,'moveOnset')
+    h.obj.bp.ev.(evName) = findMoveOnset(h.obj);
+end
 
 % create a spiketm vector aligned to event specified in popup menu
 for clu = 1:numel(h.obj.clu{probe})
