@@ -5,8 +5,8 @@ h = guidata(fig);
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
 
+dt = 0.005;
 edges = tmin:0.005:tmax;
-dt = mean(diff(edges));
 
 tm = edges + dt./2;
 tm = tm(1:end-1);

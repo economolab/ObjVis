@@ -17,13 +17,17 @@ for i = h.filt.N:-1:1
     trix = find(h.filt.ix(:,i));
     [spkix, trialcnt] = ismember(clu.trial, trix);
     
-    plot(h.ax(1), clu.trialtm(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
-    axis(h.ax(1), 'tight');
-    hold(h.ax(1), 'on');
-    
     sample = median(h.obj.bp.ev.sample(trix));
     delay = median(h.obj.bp.ev.delay(trix));
     goCue = median(h.obj.bp.ev.goCue(trix));
+    
+    if h.align
+        plot(h.ax(1), clu.trialtm_aligned(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
+    else
+        plot(h.ax(1), clu.trialtm(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
+    end
+    axis(h.ax(1), 'tight');
+    hold(h.ax(1), 'on');
     
     plot(h.ax(1), [sample sample], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
     plot(h.ax(1), [delay delay], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);

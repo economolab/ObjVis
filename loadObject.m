@@ -35,6 +35,12 @@ end
 
 h.datafn = fullfile(pth, fn);
 
+% align event names
+f = h.obj.bp.ev;
+eventNames = fieldnames(f);
+set(h.alignMenu, 'Value', 1, 'String', eventNames);
+
+
 guidata(fig, h);
 probeSelect([], [], fig);
 updateBehav([], [], fig);
