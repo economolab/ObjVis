@@ -2,7 +2,7 @@ function ObjVis()
 close all;
 
 global spkOffset
-spkOffset = 0.5;
+spkOffset = 0.0;
 
 bcol = [1 1 1];
 
@@ -29,6 +29,8 @@ h.alignMenu = uicontrol(h.fig(1), 'Style', 'popupmenu', 'Units', 'Pixels', 'Posi
     'FontSize', 10);
 h.alignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [100 100 125 30], 'String', 'Align To Event', ...
     'Callback', {@alignData, h.fig(1)}, 'FontSize', 10);
+h.unalignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [230 100 75 30], 'String', 'Unalign', ...
+    'Callback', {@unalignData, h.fig(1)}, 'FontSize', 10);
 
 h.unitList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
     [15 340 120 325], 'String', {'no units'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...

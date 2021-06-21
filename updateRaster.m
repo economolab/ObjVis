@@ -5,6 +5,7 @@ h = guidata(fig);
 hold(h.ax(1), 'off');
 trialOffset = 0;
 
+
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
 
@@ -29,10 +30,13 @@ for i = h.filt.N:-1:1
     axis(h.ax(1), 'tight');
     hold(h.ax(1), 'on');
     
-    plot(h.ax(1), [sample sample], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
-    plot(h.ax(1), [delay delay], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
-    plot(h.ax(1), [goCue goCue], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
-
+    if ~h.align
+        plot(h.ax(1), [sample sample], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
+        plot(h.ax(1), [delay delay], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
+        plot(h.ax(1), [goCue goCue], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
+    else
+         plot(h.ax(1), [0 0], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
+    end
     
     trialOffset = trialOffset+numel(trix);
     plot(h.ax(1), [tmin tmax], 0.5+trialOffset+[0 0], '-', 'LineWidth', 2, 'Color', [0.5 0.5 0.5]);
@@ -40,5 +44,15 @@ end
 
 xlim(h.ax(1), [tmin, tmax]);
 
-xlabel(h.ax(1), 'Time (sec)');
+if h.align
+    evList = get(h.alignMenu, 'String');
+    evName = evList{get(h.alignMenu, 'Value')};
+    xlabel(h.ax(1), ['Time (s) aligned to ' evName]);
+else
+    xlabel(h.ax(1), 'Time (sec)');
+end
 ylabel(h.ax(1), 'Trials');
+
+
+
+

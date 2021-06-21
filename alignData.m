@@ -1,5 +1,6 @@
 function alignData(~, ~, fig)
 
+
 h = guidata(fig);
 h.align = 1;
 
@@ -10,6 +11,8 @@ if strcmp(evName,'moveOnset')
     h.obj.bp.ev.(evName) = findMoveOnset(h.obj);
 end
 
+f = msgbox(['Aligning Data to ' evName]);
+
 % create a spiketm vector aligned to event specified in popup menu
 for clu = 1:numel(h.obj.clu{probe})
     event = zeros(length(h.obj.clu{probe}(clu).trial),1);
@@ -19,6 +22,11 @@ for clu = 1:numel(h.obj.clu{probe})
     h.obj.clu{probe}(clu).trialtm_aligned = h.obj.clu{probe}(clu).trialtm - event;
 end
 
+delete(f);
+f = msgbox('Alignment Completed');
+pause(0.5);
+delete(f);
+
 guidata(h.fig(1), h);
 
 probe = get(h.probeList, 'Value');
@@ -27,6 +35,9 @@ unit = get(h.unitList, 'Value');
 clu = h.obj.clu{probe}(unit);
 
 updateRaster(fig, clu);
+updatePSTH(fig, clu);
+
+
 
 
 end % alignData
