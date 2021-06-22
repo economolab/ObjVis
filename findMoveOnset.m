@@ -32,6 +32,9 @@ trajSpeed = getTrajSpeed(traj,dt);
 % find move onset time for each trial
 moveOn = getMoveOnTime(trajSpeed,time,obj.bp.ev.goCue); % (trials,2 (on,off))
 
+% set any nans to go cue time
+moveOn(isnan(moveOn)) = obj.bp.ev.goCue(isnan(moveOn));
+
 
 end % findMoveOnset
 

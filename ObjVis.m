@@ -3,9 +3,6 @@ close all;
 
 addpath(genpath(fullfile(pwd, 'null_potent')));
 
-global spkOffset
-spkOffset = 0.0;
-
 bcol = [1 1 1];
 
 % Master Figure

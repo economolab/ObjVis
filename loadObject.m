@@ -1,5 +1,5 @@
 function loadObject(~, ~, fig)
-global spkOffset
+
 h = guidata(fig);
 
 [fn, pth] = uigetfile('*.mat', 'Select Object File');
@@ -26,21 +26,23 @@ for i = 1:Ncam
 end
 set(h.cameraList, 'Value', 1, 'String', str);
 
-for i = 1:numel(h.obj.clu)
-    for j = 1:numel(h.obj.clu{i})
-        h.obj.clu{i}(j).trialtm = h.obj.clu{i}(j).trialtm - spkOffset;
-        
-    end
-end
-
 h.datafn = fullfile(pth, fn);
 
-% align event names
+% get event names for aligning data
 f = h.obj.bp.ev;
-eventNames = fieldnames(f);
+tempNames = fieldnames(f);
+% only get events that are stored in doubles (can handle cells later)
+j = 1;
+for i = 1:numel(tempNames)
+    if ~iscell(h.obj.bp.ev.(tempNames{i}))
+        eventNames{j} = tempNames{i};
+        j = j + 1;
+    end
+end
 eventNames{end+1} = 'moveOnset';
+eventNames{end+1} = 'firstLick';
+eventNames{end+1} = 'lastLick';
 set(h.alignMenu, 'Value', 1, 'String', eventNames);
-
 
 guidata(fig, h);
 probeSelect([], [], fig);
