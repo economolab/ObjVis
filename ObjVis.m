@@ -1,6 +1,8 @@
 function ObjVis()
 close all;
 
+addpath(genpath(fullfile(pwd, 'null_potent')));
+
 global spkOffset
 spkOffset = 0.0;
 
@@ -31,6 +33,9 @@ h.alignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'P
     'Callback', {@alignData, h.fig(1)}, 'FontSize', 10);
 h.unalignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [230 100 75 30], 'String', 'Unalign', ...
     'Callback', {@unalignData, h.fig(1)}, 'FontSize', 10);
+
+h.nullButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 60 85 30], 'String', 'Null Space', ...
+    'Callback', {@subspace_opt, h.fig(1)}, 'FontSize', 10);
 
 h.unitList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
     [15 340 120 325], 'String', {'no units'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...
@@ -100,6 +105,7 @@ uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [325 380 90 22], 'Stri
     'FontSize', 12, 'HorizontalAlignment', 'Right', 'BackgroundColor', bcol);
 h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 380 50 25], 'String', 0, 'Callback', {@updateVideo, h.fig});
+
 
 
 % PSTH
