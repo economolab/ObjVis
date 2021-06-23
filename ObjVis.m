@@ -13,6 +13,9 @@ set(h.fig(1), 'Units', 'Pixels', 'Position', [15 50 500 800], 'Color', bcol);
 h.loadData = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 10 120 40], 'String', 'Load Object', ...
     'Callback', {@loadObject, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
 
+h.linkAxes = uicontrol(h.fig(1), 'Style', 'checkbox', 'Units', 'Pixels', 'Position', [160 10 120 40], 'String', 'Link All Axes', ...
+     'Callback', {@linkBox, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
+
 h.addFilter = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 150 75 30], 'String', 'Add', ...
     'Callback', {@addFilter, h.fig(1)}, 'FontSize', 10);
 h.filterInfo = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [100 150 75 30], 'String', 'Remove', ...
@@ -113,7 +116,6 @@ h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
 guidata(h.fig(1), h);
 
 initPlots(h.fig(1));
-% initBehav(h.fig(1));
 
 
 

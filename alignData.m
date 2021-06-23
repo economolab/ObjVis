@@ -57,11 +57,6 @@ for clu = 1:numel(h.obj.clu{probe})
     h.obj.clu{probe}(clu).trialtm_aligned = h.obj.clu{probe}(clu).trialtm - event;
 end
 
-delete(f);
-f = msgbox('Alignment Completed');
-pause(1);
-delete(f);
-
 guidata(h.fig(1), h);
 
 probe = get(h.probeList, 'Value');
@@ -73,5 +68,10 @@ updateRaster(fig, clu);
 updatePSTH(fig, clu);
 updateBehav([],[],fig);
 updateVideo([],[],fig)
+
+delete(f);
+f = msgbox('Alignment Completed');
+pause(1);
+delete(f);
 
 end % alignData
