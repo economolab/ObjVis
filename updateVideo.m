@@ -46,13 +46,21 @@ for i = 1:h.filt.N
             end
         end
         
-        plot(h.ax(4), dat(:,1), yoff + dat(:,2), '-', 'Color', h.filt.clr(i,:));
+        % plot
+        if h.align
+            evName = h.alignMenu.String{h.alignMenu.Value};
+            plot(h.ax(4), dat(:,1) - h.obj.bp.ev.(evName)(trix(j)), yoff + dat(:,2), '-', 'Color', h.filt.clr(i,:));
+        else
+            plot(h.ax(4), dat(:,1), yoff + dat(:,2), '-', 'Color', h.filt.clr(i,:));
+        end
         hold(h.ax(4), 'on');
         yoff = yoff+offset;
     end
 end
-xlabel(h.ax(4), 'Feature 1');
-ylabel(h.ax(4), 'Feature 2');
+
+xlabel(h.ax(4), h.feat_popupmenu(1).String{h.feat_popupmenu(1).Value});
+ylabel(h.ax(4), h.feat_popupmenu(2).String{h.feat_popupmenu(2).Value});
+title(h.ax(4), h.featureList.String{h.featureList.Value});
 
 axis(h.ax(4), 'tight');
 set(h.ax(4), 'XGrid', 'On', 'YGrid', 'On');

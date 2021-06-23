@@ -55,6 +55,7 @@ else
 end
 
 ylabel(h.ax(2), 'Firing rate (Hz)');
+title(h.ax(2), h.unitList.String{h.unitList.Value});
 
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));

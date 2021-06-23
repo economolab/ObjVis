@@ -28,6 +28,17 @@ set(h.cameraList, 'Value', 1, 'String', str);
 
 h.datafn = fullfile(pth, fn);
 
+% get features
+if h.cameraList.Value == 1
+    featStr = {'Time','X','Z'};
+else
+    featStr = {'Time','X','Y'};
+end
+for i = 1:h.feat.N
+    h.feat_popupmenu(i).String = featStr;
+    h.feat_popupmenu(i).Value = i;
+end
+
 % get event names for aligning data
 f = h.obj.bp.ev;
 tempNames = fieldnames(f);

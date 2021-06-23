@@ -28,6 +28,7 @@ end
 
 updateRaster(fig, clu);
 updatePSTH(fig, clu);
+updateVideo([],[],fig);
 linkaxes(h.ax(1:3), 'x');
 
 set(h.ax, 'XGrid', 'On', 'YGrid', 'On');
