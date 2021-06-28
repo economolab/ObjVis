@@ -1,21 +1,28 @@
 function ObjVis()
 close all;
 
+%% add paths
 addpath(genpath(fullfile(pwd, 'null_potent')));
 addpath(genpath(fullfile(pwd, 'dim_reduction')));
+addpath(genpath(fullfile(pwd, 'selectivity')));
+addpath(genpath(fullfile(pwd, 'utils')));
 
+%% Setup GUI
 bcol = [1 1 1];
 
-% Master Figure
+% Main Figure
 h.fig(1) = figure(532);
 set(h.fig(1), 'Units', 'Pixels', 'Position', [15 50 500 800], 'Color', bcol);
 
+% load object
 h.loadData = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 10 120 40], 'String', 'Load Object', ...
     'Callback', {@loadObject, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
 
+% link all axes
 h.linkAxes = uicontrol(h.fig(1), 'Style', 'checkbox', 'Units', 'Pixels', 'Position', [160 10 120 40], 'String', 'Link All Axes', ...
      'Callback', {@linkBox, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
 
+% trial type filters
 h.addFilter = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 150 75 30], 'String', 'Add', ...
     'Callback', {@addFilter, h.fig(1)}, 'FontSize', 10);
 h.filterInfo = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [100 150 75 30], 'String', 'Remove', ...
@@ -27,6 +34,7 @@ h.filterInfo = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Po
 h.filterInfo = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [350 150 75 30], 'String', 'Info', ...
     'Callback', {@filterInfo, h.fig(1)}, 'FontSize', 10);
 
+% align data
 h.align = 0;
 h.alignMenu = uicontrol(h.fig(1), 'Style', 'popupmenu', 'Units', 'Pixels', 'Position', [15 100 75 30], 'String', {''}, ...
     'FontSize', 10);
@@ -35,12 +43,17 @@ h.alignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'P
 h.unalignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [230 100 75 30], 'String', 'Unalign', ...
     'Callback', {@unalignData, h.fig(1)}, 'FontSize', 10);
 
+% null space, pca, selectivity
 h.nullButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 60 85 30], 'String', 'Null Space', ...
     'Callback', {@subspace_opt, h.fig(1)}, 'FontSize', 10);
 
-h.pcaButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [100 60 75 30], 'String', 'PCA', ...
+h.pcaButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [105 60 75 30], 'String', 'PCA', ...
     'Callback', {@my_pca, h.fig(1)}, 'FontSize', 10);
 
+h.selectivityButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [190 60 75 30], 'String', 'Selectivity', ...
+    'Callback', {@my_selectivity, h.fig(1)}, 'FontSize', 10);
+
+% select units, probes
 h.unitList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
     [15 340 120 325], 'String', {'no units'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...
     'Max', 3, 'Min', 1, 'Callback',  {@unitSelect, h.fig(1)});
@@ -49,6 +62,7 @@ h.probeList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Positi
     [15 700 120 75], 'String', {'no probes'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...
     'Max', 3, 'Min', 1, 'Callback',  {@probeSelect, h.fig(1)});
 
+% setup filter table
 tabdat = {'R&hit', 0, 0, 1, true; ...
          'L&hit', 1, 0, 0, true};
      
@@ -56,6 +70,7 @@ h.filterTable = uitable(h.fig(1), 'Data' ,tabdat,'ColumnWidth',{150,40,40,40,60}
     'ColumnName', {'Filter','Red', 'Green', 'Blue', 'Enabled'}, 'ColumnEditable', true, ...
     'CellEditCallback', {@tableChange, h.fig(1)});
 
+% time
 uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [375 47 50 25], 'String', 'Min:', ...
     'FontSize', 12, 'BackgroundColor', bcol);
 uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [375 77 50 25], 'String', 'Max:', ...
@@ -68,14 +83,14 @@ h.tmin = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
 h.tmax = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 80 50 25], 'String', 5.5, 'Callback', {@updateAxes, h.fig});
 
-
+% smoothing
 uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [325 10 100 25], 'String', 'Smoothing:', ...
     'FontSize', 12, 'BackgroundColor', bcol);
 h.smoothing = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 10 50 25], 'String', 15, 'Callback', {@updateAxes, h.fig});
 
 
-
+% setup video data features
 h.feat.N = 2;
 h.feat.str = {'','',''};
 for i = 1:h.feat.N
@@ -112,7 +127,7 @@ h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
 
 
 
-% PSTH
+%% Init GUI
 guidata(h.fig(1), h);
 
 initPlots(h.fig(1));

@@ -18,7 +18,6 @@ tm = tm(1:end-1);
 
 sm = str2double(get(h.smoothing, 'String'));
 
-psth = zeros(length(tm),numel(h.obj.clu{probe}));
 ttPSTH = zeros(length(tm),numel(h.obj.clu{probe}),numel(h.filt.N));
 for clu = 1:numel(h.obj.clu{probe})
     for i = 1:h.filt.N
@@ -62,6 +61,13 @@ title(['All units projected onto first ' num2str(nComp) ' PCs'])
 hold off
 xlim([tmin tmax])
 
+% % t sne
+% concatenate ttpsth
+tsnePSTH = [ttPSTH(:,:,1) ; ttPSTH(:,:,2)];
+embedding = tsne(tsnePSTH);
+
+'hi'
+figure; plot(embedding(:,1),embedding(:,2),'.');
 
 % % perform pca on trial-averaged data separated by trial type, plot
 % % projections
