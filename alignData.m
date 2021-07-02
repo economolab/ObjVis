@@ -43,7 +43,7 @@ if strcmp(evName,'lastLick')
     outR = zeros(size(temp));
     outR(idx) = cellfun(@(v)v(end),temp(idx));
     lastLick = zeros(size(temp));
-    % firstLick = min(outL,outR), except when outL||outR == 0
+    % lastLick = max(outL,outR), except when outL||outR == 0
     outL(outL==0) = nan;
     outR(outR==0) = nan;
     lastLick = nanmax(outL,outR);

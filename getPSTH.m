@@ -1,4 +1,4 @@
-function psth = getPSTH(fig,varargin)
+function [psth,tm] = getPSTH(fig,varargin)
 % inputs: fig
 %         vargin -> clu
 
@@ -12,7 +12,7 @@ tm = edges + dt./2;
 tm = tm(1:end-1);
 sm = str2double(get(h.smoothing, 'String'));
 
-if nargin == 2
+if nargin > 1
     clu = varargin{1};
     % if 2nd input specified (should be a numeric unit number), then get
     % psth for that cluster only

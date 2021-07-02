@@ -42,7 +42,7 @@ end
 % get event names for aligning data
 f = h.obj.bp.ev;
 tempNames = fieldnames(f);
-% only get events that are stored in doubles (can handle cells later)
+% only get events that are stored in doubles
 j = 1;
 for i = 1:numel(tempNames)
     if ~iscell(h.obj.bp.ev.(tempNames{i}))
@@ -50,10 +50,15 @@ for i = 1:numel(tempNames)
         j = j + 1;
     end
 end
+% add additional events
 eventNames{end+1} = 'moveOnset';
 eventNames{end+1} = 'firstLick';
 eventNames{end+1} = 'lastLick';
 set(h.alignMenu, 'Value', 1, 'String', eventNames);
+
+% set epoch names in projection table epochs
+epochNames = {'presample' eventNames{2:5}};
+h.filterTable.ColumnFormat = ({[],[],[],[],[],epochNames});
 
 guidata(fig, h);
 probeSelect([], [], fig);

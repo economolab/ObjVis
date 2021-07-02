@@ -12,6 +12,8 @@ function my_selectivity(~,~,fig)
 % % Prob(SR_delay,right = SR_delay,left) < 0.05
 % % ranksum()
 
+% use mike's Projections code -> make a new filter table with projections
+% to show and time periods to use
 
 %% CODE
 
