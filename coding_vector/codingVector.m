@@ -1,4 +1,4 @@
-function Projections_v2(~,~,fig)
+function codingVector(~,~,fig)
 
 % % HOW TO HANDLE TRIALS OF DIFFERING LENGTH 
 % what i'm thinking is i'll calculate single trial firing rates, avg over
@@ -53,6 +53,29 @@ cv = cv./sum(abs(cv)); % (ncells,1)
 % get trial-averaged psths for all clu (time,clu,filt)
 [psth,tm] = getPSTH(fig);
 
+% testing orthog stuff
+figure
+load('cvpresample.mat')
+proj1 = psth(:,:,1) * cv;
+proj2 = psth(:,:,2) * cv;
+subplot(3,1,1)
+plot(tm,proj1,'b'); hold on
+plot(tm,proj2,'r');
+load('cvgocue.mat')
+proj1 = psth(:,:,1) * cv;
+proj2 = psth(:,:,2) * cv;
+subplot(3,1,2)
+plot(tm,proj1,'b'); hold on
+plot(tm,proj2,'r');
+load('cvgocue_orth.mat')
+proj1 = psth(:,:,1) * cv;
+proj2 = psth(:,:,2) * cv;
+subplot(3,1,3)
+plot(tm,proj1,'b'); hold on
+plot(tm,proj2,'r');
+
+
+
 % project onto cv
 proj1 = psth(:,:,1) * cv;
 proj2 = psth(:,:,2) * cv;
@@ -82,10 +105,11 @@ function edges = findedges(obj,dt,epoch,trial)
             e1 = obj.bp.ev.reward(trial);
             e2 = obj.bp.ev.reward(trial) + 1;
     end
-   % define edges based on e1 and e2 for tr (the current trial)
+   % define edges based on e1 and e2 for the current trial
    edges = e1:dt:e2;
    
 end % findedges
+
 
 
 

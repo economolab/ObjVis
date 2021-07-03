@@ -4,7 +4,7 @@ close all;
 %% add paths
 addpath(genpath(fullfile(pwd, 'null_potent')));
 addpath(genpath(fullfile(pwd, 'dim_reduction')));
-addpath(genpath(fullfile(pwd, 'selectivity')));
+addpath(genpath(fullfile(pwd, 'coding_vector')));
 addpath(genpath(fullfile(pwd, 'utils')));
 
 %% Setup GUI
@@ -49,9 +49,6 @@ h.nullButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Po
 
 h.pcaButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [105 60 75 30], 'String', 'PCA', ...
     'Callback', {@my_pca, h.fig(1)}, 'FontSize', 10);
-
-h.selectivityButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [190 60 75 30], 'String', 'Selectivity', ...
-    'Callback', {@my_selectivity, h.fig(1)}, 'FontSize', 10);
 
 % select units, probes
 h.unitList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
@@ -130,7 +127,7 @@ projTypes = {'Epoch Coding Vector'};
 h.projMenu = uicontrol(h.fig(1), 'Style', 'popupmenu', 'Units', 'Pixels', 'Position', [250 337, 100, 30], 'String', projTypes, ...
     'FontSize', 10);
 h.projButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [360 340, 100, 30], 'String', 'Project', ...
-    'Callback', {@Projections_v2, h.fig(1)}, 'FontSize', 10);
+    'Callback', {@codingVector, h.fig(1)}, 'FontSize', 10);
 
 
 
