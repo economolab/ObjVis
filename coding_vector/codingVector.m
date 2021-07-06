@@ -1,4 +1,4 @@
-function codingVector(~,~,fig)
+function codingVector(fig)
 
 % % HOW TO HANDLE TRIALS OF DIFFERING LENGTH 
 % what i'm thinking is i'll calculate single trial firing rates, avg over
@@ -26,7 +26,7 @@ for clu = 1:numel(h.obj.clu{probe})
             % get spike times for trial
             tr = trix(trial);
             spkix = ismember(h.obj.clu{probe}(clu).trial, tr);
-            % calculate edges (idx corresponding to epoch period for trial)
+            % calculate edges (idxs corresponding to epoch period for trial)
             edges = findedges(h.obj,dt,epoch{cond},tr);
             % calculate psth for that trial
             psth(1:numel(edges),clu,trial,cond) = histc(h.obj.clu{probe}(clu).trialtm(spkix), edges);
@@ -53,26 +53,37 @@ cv = cv./sum(abs(cv)); % (ncells,1)
 % get trial-averaged psths for all clu (time,clu,filt)
 [psth,tm] = getPSTH(fig);
 
-% testing orthog stuff
-figure
-load('cvpresample.mat')
-proj1 = psth(:,:,1) * cv;
-proj2 = psth(:,:,2) * cv;
-subplot(3,1,1)
-plot(tm,proj1,'b'); hold on
-plot(tm,proj2,'r');
-load('cvgocue.mat')
-proj1 = psth(:,:,1) * cv;
-proj2 = psth(:,:,2) * cv;
-subplot(3,1,2)
-plot(tm,proj1,'b'); hold on
-plot(tm,proj2,'r');
-load('cvgocue_orth.mat')
-proj1 = psth(:,:,1) * cv;
-proj2 = psth(:,:,2) * cv;
-subplot(3,1,3)
-plot(tm,proj1,'b'); hold on
-plot(tm,proj2,'r');
+% % testing orthog stuff
+% figure
+% load('cvpresample.mat')
+% proj1 = psth(:,:,1) * cv;
+% proj2 = psth(:,:,2) * cv;
+% subplot(4,1,1)
+% plot(tm,proj1,'b'); hold on
+% plot(tm,proj2,'r');
+% title('presample')
+% load('cvgocue.mat')
+% proj1 = psth(:,:,1) * cv;
+% proj2 = psth(:,:,2) * cv;
+% subplot(4,1,2)
+% plot(tm,proj1,'b'); hold on
+% plot(tm,proj2,'r');
+% title('gocue')
+% load('cvgocue_orth.mat')
+% proj1 = psth(:,:,1) * cv;
+% proj2 = psth(:,:,2) * cv;
+% subplot(4,1,3)
+% plot(tm,proj1,'b'); hold on
+% plot(tm,proj2,'r');
+% title('orth gocue to presample')
+% load('cvpresamp_orth.mat')
+% proj1 = psth(:,:,1) * cv;
+% proj2 = psth(:,:,2) * cv;
+% subplot(4,1,4)
+% plot(tm,proj1,'b'); hold on
+% plot(tm,proj2,'r');
+% title('orth presamp to gocue')
+
 
 
 

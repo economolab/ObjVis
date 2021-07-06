@@ -5,6 +5,7 @@ close all;
 addpath(genpath(fullfile(pwd, 'null_potent')));
 addpath(genpath(fullfile(pwd, 'dim_reduction')));
 addpath(genpath(fullfile(pwd, 'coding_vector')));
+addpath(genpath(fullfile(pwd, 'activity_modes')));
 addpath(genpath(fullfile(pwd, 'utils')));
 
 %% Setup GUI
@@ -123,11 +124,11 @@ h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 455 50 25], 'String', 0, 'Callback', {@updateVideo, h.fig});
 
 % projections 
-projTypes = {'Epoch Coding Vector'};
+projTypes = {'Epoch Coding Vector', 'Activity Modes'};
 h.projMenu = uicontrol(h.fig(1), 'Style', 'popupmenu', 'Units', 'Pixels', 'Position', [250 337, 100, 30], 'String', projTypes, ...
     'FontSize', 10);
 h.projButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [360 340, 100, 30], 'String', 'Project', ...
-    'Callback', {@codingVector, h.fig(1)}, 'FontSize', 10);
+    'Callback', {@projButtonPressed, h.fig(1)}, 'FontSize', 10);
 
 
 
