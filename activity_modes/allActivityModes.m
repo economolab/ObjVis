@@ -24,10 +24,12 @@ function allActivityModes(fig)
 
 
 % % TODO: 
-% 1. find 7 modes
-% 2. only use portion of trials to find modes and other portion to project
-% 3. visualize
-% 4. subtract out modes found using 2afc from aw context. See what's left.
+% 1. find 7 modes (found 1-4, action not right though)
+% 2. orthogonalize modes with gschmidt
+% 3. only use portion of trials to find modes and other portion to project
+% 4. visualize
+% 5. subtract out modes found using 2afc from aw context. See what's left.
+% % preprocess data other than normalize???
 
 h = guidata(fig);
 
@@ -37,12 +39,59 @@ dt = 0.005;
 
 [psth,tm] = getPSTH(fig);
 
-stimMode = getStimMode(h,{'R&hit','L&hit','R&miss','L&miss'});
-plotModeProj(stimMode,psth,tm,'stimulus mode');
+mode = nan(numel(h.obj.clu{probe}),7);
 
+% stimulus mode
+ttype{1} = 'R&hit&autowater.nums==2&stim.num==0';
+ttype{2} = 'L&hit&autowater.nums==2&stim.num==0';
+ttype{3} = 'R&miss&autowater.nums==2&stim.num==0';
+ttype{4} = 'L&miss&autowater.nums==2&stim.num==0';
+mode(:,1) = getStimulusMode(h,ttype);
+% plotModeProj(mode(:,1),psth,tm,'stimulus mode');
 
+% choice mode
+% uses same ttype as stimulus mode
+mode(:,2) = getChoiceMode(h,ttype);
+% plotModeProj(mode(:,2),psth,tm,'choice mode');
+
+% action mode
+ttype{1} = 'R&hit&autowater.nums==2&stim.num==0';
+ttype{2} = 'L&hit&autowater.nums==2&stim.num==0';
+mode(:,3) = getActionMode(h,ttype);
+% plotModeProj(mode(:,3),psth,tm,'action mode');
+
+% outcome mode
+ttype{1} = 'R&hit&autowater.nums==2&stim.num==0';
+ttype{2} = 'L&hit&autowater.nums==2&stim.num==0';
+ttype{3} = 'R&miss&autowater.nums==2&stim.num==0';
+ttype{4} = 'L&miss&autowater.nums==2&stim.num==0';
+mode(:,4) = getOutcomeMode(h,ttype);
+% plotModeProj(mode(:,4),psth,tm,'outcome mode');
+
+% dot product b/w modes (measure of orthogonality)
+dots = mode'*mode;
+figure;
+dots_fig = pcolor(dots);
+set(dots_fig,'EdgeColor','none');
+set(gca,'YDir','reverse')
+colorbar
+% caxis([0,1])
+cmap = flip(gray);
+colormap(cmap)
+
+% orthogonalize modes with gschmidt
+
+orthMode = gschmidt(mode);
+% orthMode = orthogDir_v2(mode);
+
+plotModeProj(orthMode(:,1),psth,tm,'stimulus orthMode');
+plotModeProj(orthMode(:,2),psth,tm,'choice orthMode');
+plotModeProj(orthMode(:,3),psth,tm,'action orthMode');
+plotModeProj(orthMode(:,4),psth,tm,'outcome orthMode');
 
 end % allActivityModes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function edges = findedges(obj,dt,epoch,trial)
     % find histogram bin edges for a specific trial and epoch
@@ -61,34 +110,18 @@ function edges = findedges(obj,dt,epoch,trial)
         case 'goCue'
             e1 = obj.bp.ev.goCue(trial);
             e2 = obj.bp.ev.goCue(trial) + 1; 
-        case 'reward'
-            e1 = obj.bp.ev.reward(trial);
-            e2 = obj.bp.ev.reward(trial) + 1;
+        case 'outcome'
+            e1 = obj.bp.ev.goCue(trial);
+            e2 = obj.bp.ev.goCue(trial) + 1.3;
     end
    % define edges based on e1 and e2 for the current trial
    edges = e1:dt:e2;
    
 end % findedges
 
-function plotModeProj(mode,psth,tm,ptitle)
-% project psth for hitR and hitL onto mode
-proj1 = psth(:,:,1) * mode;
-proj2 = psth(:,:,2) * mode;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure;
-plot(tm,proj1,'b'); hold on
-plot(tm,proj2,'r');
-title(ptitle)
-end % plotModeProj
-
-function stimMode = getStimMode(h,ttype)
-% 1. stimulus mode: defined during stimulus (sample) period
-%       ((hitR - missL) + (missR - hitL)) / sqrt(sum(sd for each tt ^2));
-probe = h.probeList.Value;
-epoch = 'sample';
-dt = 0.005;
-
-% deal with trial types
+function filt = getFilters(h,ttype)
 varnames = getStructVarNames(h);
 for i = 1:numel(varnames)
     eval([varnames{i} ' = h.obj.bp.' varnames{i} ';']);
@@ -104,6 +137,31 @@ for i = 1:numel(ttype)
     curfilt = ttype{i};
     filt.ix(:,i) = eval(curfilt);
 end
+end % getFilters
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function plotModeProj(mode,psth,tm,ptitle)
+% project psth for hitR and hitL onto mode
+proj1 = psth(:,:,1) * mode;
+proj2 = psth(:,:,2) * mode;
+
+figure;
+plot(tm,proj1,'b'); hold on
+plot(tm,proj2,'r');
+title(ptitle)
+end % plotModeProj
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function mode = getStimulusMode(h,ttype)
+% 1. stimulus mode: defined during stimulus (sample) period
+%       ((hitR - missL) + (missR - hitL)) / sqrt(sum(sd for each tt ^2));
+probe = h.probeList.Value;
+epoch = 'sample';
+dt = 0.005;
+
+filt = getFilters(h,ttype);
 
 nTrials = max(sum(filt.ix));
 psth = nan(500,numel(h.obj.clu{probe}),nTrials,filt.N);
@@ -134,24 +192,163 @@ for clu = 1:numel(h.obj.clu{probe})
     end
 end
 
-stimMode = ((mu(:,1)-mu(:,4)) + (mu(:,3)-mu(:,2)))./ sqrt(sum(sd.^2,2));
-stimMode(isnan(stimMode)) = 0;
+mode = ((mu(:,1)-mu(:,4)) + (mu(:,3)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+mode(isnan(mode)) = 0;
 pvalThresh = 1; 
 
-stimMode = stimMode.*(pval' < pvalThresh);
-stimMode = stimMode./sum(abs(stimMode)); % (ncells,1)
+mode = mode.*(pval' < pvalThresh);
+mode = mode./sum(abs(mode)); % (ncells,1)
 
-end % getStimMode
+end % getStimulusMode
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+function mode = getChoiceMode(h,ttype)
+% 1. choice mode: defined during delay period
+%       ((hitR - missR) + (missL - hitL)) / sqrt(sum(sd for each tt ^2));
+probe = h.probeList.Value;
+epoch = 'delay';
+dt = 0.005;
 
+filt = getFilters(h,ttype);
 
+nTrials = max(sum(filt.ix));
+psth = nan(500,numel(h.obj.clu{probe}),nTrials,filt.N);
+epochMean = nan(numel(h.obj.clu{probe}),nTrials,filt.N);
+% for each cluster
+for clu = 1:numel(h.obj.clu{probe})
+    % for each filt
+    for cond = 1:filt.N
+        trix = find(filt.ix(:,cond));
+        % for each trial in filt
+        for trial = 1:numel(trix)
+            % get spike times for trial
+            tr = trix(trial);
+            spkix = ismember(h.obj.clu{probe}(clu).trial, tr);
+            % calculate edges (idxs corresponding to epoch period for trial)
+            edges = findedges(h.obj,dt,epoch,tr);
+            % calculate psth for that trial
+            psth(1:numel(edges),clu,trial,cond) = histc(h.obj.clu{probe}(clu).trialtm(spkix), edges);
+            % mean of psth(trial) == avg firing rate for trial during epoch
+            epochMean(clu,trial,cond) = nanmean(psth(:,clu,trial,cond),1);
+        end
+    end
+    % calculate pval with mann u whitney test
+    pval(clu) = ranksum(epochMean(clu,:,1), epochMean(clu,:,2));
+    for ii = 1:filt.N
+        mu(clu,ii) = nanmean(epochMean(clu,:,ii));
+        sd(clu,ii) = nanstd(epochMean(clu,:,ii));
+    end
+end
 
+mode = ((mu(:,1)-mu(:,3)) + (mu(:,4)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+mode(isnan(mode)) = 0;
+pvalThresh = 1; 
 
+mode = mode.*(pval' < pvalThresh);
+mode = mode./sum(abs(mode)); % (ncells,1)
 
+end % getChoiceMode
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+function mode = getActionMode(h,ttype)
+% 3. action mode: defined during mvmt init (0.1 to 0.3 s rel to go cue)
+%       (hitR - hitL) / sqrt(sum(sd for each tt ^2));
+probe = h.probeList.Value;
+dt = 0.005;
 
+filt = getFilters(h,ttype);
+
+nTrials = max(sum(filt.ix));
+psth = nan(500,numel(h.obj.clu{probe}),nTrials,filt.N);
+epochMean = nan(numel(h.obj.clu{probe}),nTrials,filt.N);
+% for each cluster
+for clu = 1:numel(h.obj.clu{probe})
+    % for each filt
+    for cond = 1:filt.N
+        trix = find(filt.ix(:,cond));
+        % for each trial in filt
+        for trial = 1:numel(trix)
+            % get spike times for trial
+            tr = trix(trial);
+            spkix = ismember(h.obj.clu{probe}(clu).trial, tr);
+            % calculate edges (idxs corresponding to epoch period for trial)
+            t_gocue = h.obj.bp.ev.goCue(trial);
+            edges = (t_gocue+0.05):dt:(t_gocue+0.5);
+            % calculate psth for that trial
+            psth(1:numel(edges),clu,trial,cond) = histc(h.obj.clu{probe}(clu).trialtm(spkix), edges);
+            % mean of psth(trial) == avg firing rate for trial during epoch
+            epochMean(clu,trial,cond) = nanmean(psth(:,clu,trial,cond),1);
+        end
+    end
+    % calculate pval with mann u whitney test
+    pval(clu) = ranksum(epochMean(clu,:,1), epochMean(clu,:,2));
+    for ii = 1:filt.N
+        mu(clu,ii) = nanmean(epochMean(clu,:,ii));
+        sd(clu,ii) = nanstd(epochMean(clu,:,ii));
+    end
+end
+
+mode = (mu(:,1)-mu(:,2))./ sqrt(sum(sd.^2,2));
+mode(isnan(mode)) = 0;
+pvalThresh = 1; 
+
+mode = mode.*(pval' < pvalThresh);
+mode = mode./sum(abs(mode)); % (ncells,1)
+
+end % getActionMode
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+function mode = getOutcomeMode(h,ttype)
+% 4. outcome mode: defined during response epoch (0 to 1.3 s rel go cue)
+%       ((hitR - missL) + (missR - hitL)) / sqrt(sum(sd for each tt ^2));
+probe = h.probeList.Value;
+epoch = 'outcome';
+dt = 0.005;
+
+filt = getFilters(h,ttype);
+
+nTrials = max(sum(filt.ix));
+psth = nan(500,numel(h.obj.clu{probe}),nTrials,filt.N);
+epochMean = nan(numel(h.obj.clu{probe}),nTrials,filt.N);
+% for each cluster
+for clu = 1:numel(h.obj.clu{probe})
+    % for each filt
+    for cond = 1:filt.N
+        trix = find(filt.ix(:,cond));
+        % for each trial in filt
+        for trial = 1:numel(trix)
+            % get spike times for trial
+            tr = trix(trial);
+            spkix = ismember(h.obj.clu{probe}(clu).trial, tr);
+            % calculate edges (idxs corresponding to epoch period for trial)
+            edges = findedges(h.obj,dt,epoch,tr);
+            % calculate psth for that trial
+            psth(1:numel(edges),clu,trial,cond) = histc(h.obj.clu{probe}(clu).trialtm(spkix), edges);
+            % mean of psth(trial) == avg firing rate for trial during epoch
+            epochMean(clu,trial,cond) = nanmean(psth(:,clu,trial,cond),1);
+        end
+    end
+    % calculate pval with mann u whitney test
+    pval(clu) = ranksum(epochMean(clu,:,1), epochMean(clu,:,2));
+    for ii = 1:filt.N
+        mu(clu,ii) = nanmean(epochMean(clu,:,ii));
+        sd(clu,ii) = nanstd(epochMean(clu,:,ii));
+    end
+end
+
+mode = ((mu(:,1)-mu(:,4)) + (mu(:,3)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+mode(isnan(mode)) = 0;
+pvalThresh = 1; 
+
+mode = mode.*(pval' < pvalThresh);
+mode = mode./sum(abs(mode)); % (ncells,1)
+
+end % getOutcomeMode
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
