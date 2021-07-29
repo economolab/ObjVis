@@ -12,4 +12,15 @@ for i = 1:Nfeat
 end
 set(h.featureList, 'Value', 1, 'String', str);
 
+% set features
+if h.cameraList.Value == 1
+    featStr = {'Time','X','Z'};
+else
+    featStr = {'Time','X','Y'};
+end
+for i = 1:h.feat.N
+    h.feat_popupmenu(i).String = featStr;
+    h.feat_popupmenu(i).Value = i;
+end
+
 updateVideo([], [], fig);

@@ -28,7 +28,15 @@ end
 
 updateRaster(fig, clu);
 updatePSTH(fig, clu);
-linkaxes(h.ax(1:3), 'x');
+updateVideo([],[],fig);
+
+if h.linkAxes.Value && (h.feat_popupmenu(1).Value==1)
+    linkaxes(h.ax(1:4), 'x');
+else
+    linkaxes(h.ax(1:3), 'x');
+end
 
 set(h.ax, 'XGrid', 'On', 'YGrid', 'On');
 set(h.ax, 'FontSize', 12);
+
+
