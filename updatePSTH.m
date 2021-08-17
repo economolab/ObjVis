@@ -32,6 +32,10 @@ for i = 1:h.filt.N
     
     N = N(1:end-1);
     
+    if size(N,1) < size(N,2)
+        N = N';
+    end
+    
     psth = MySmooth(N./numel(trix)./dt, sm);
 
     plot(h.ax(2), tm, psth, '-', 'Linewidth', 2, 'Color', h.filt.clr(i,:));
