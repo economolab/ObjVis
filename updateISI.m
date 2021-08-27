@@ -17,11 +17,12 @@ mx = 1.05.*mx;
 
 hold(h.ax(5), 'off');
 thr = 0.0025;
-f = fill(h.ax(5),[-thr thr thr -thr], [0 0 mx mx], [1 0.8 0.8]);
-hold(h.ax(5), 'on');
 b = bar(h.ax(5), ISIcoord, Nisi);
+hold(h.ax(5), 'on');
+f = fill(h.ax(5),[-thr thr thr -thr], [0 0 mx mx], [1 0 0]);
 set(b, 'LineStyle', 'none', 'BarWidth', 1, 'FaceColor', 'b');
 set(f, 'Linestyle', 'none');
+set(f,'FaceAlpha',0.3)
 title(h.ax(5),'ISI')
 
 
