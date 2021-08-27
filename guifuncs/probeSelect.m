@@ -4,6 +4,7 @@ h = guidata(fig);
 
 probe = get(h.probeList, 'Value');
 
+
 Nunits = numel(h.obj.clu{probe});
 
 str = cell(Nunits, 1);
