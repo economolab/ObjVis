@@ -80,26 +80,19 @@ figure; plot(embedding(:,1),embedding(:,2),'.');
 %     legend(string(explained(1:5)))
 % end
 
+R = ttPSTH(:,:,1);
+L = ttPSTH(:,:,2);
 
+Rsel = ttPSTH(:, :, 3) - R;
+Lsel = ttPSTH(:, :, 4) - L;
 
-% R = ttPSTH(:,:,1);
-% L = ttPSTH(:,:,2);
-% 
-% Rsel = ttPSTH(:, :, 3) - R;
-% Lsel = ttPSTH(:, :, 4) - L;
-% 
-% tix = find(tm>0, 1, 'first');
-% tix = 50:450;
-% [~, ix] = sort(median(Rsel(tix, :), 1), 'descend');
-% figure; imagesc(Rsel(:, ix)');
-% 
-% R2AFC = ttPSTH(tix, :, 1);
-% L2AFC = ttPSTH(tix, :, 2);
-% RAW = ttPSTH(tix, :, 3);
-% LAW = ttPSTH(tix, :, 4);
-% 
-% Rf = median(Rsel, 1)./median(R, 1);
-% Lf = median(Lsel, 1)./median(L, 1);
+R2AFC = ttPSTH(tix, :, 1);
+L2AFC = ttPSTH(tix, :, 2);
+RAW = ttPSTH(tix, :, 3);
+LAW = ttPSTH(tix, :, 4);
+
+Rf = median(Rsel, 1)./median(R, 1);
+Lf = median(Lsel, 1)./median(L, 1);
 
 
 
