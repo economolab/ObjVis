@@ -2,11 +2,7 @@ function ObjVis()
 close all;
 
 %% add paths
-addpath(genpath(fullfile(pwd, 'null_potent')));
-addpath(genpath(fullfile(pwd, 'dim_reduction')));
-addpath(genpath(fullfile(pwd, 'coding_vector')));
-addpath(genpath(fullfile(pwd, 'activity_modes')));
-addpath(genpath(fullfile(pwd, 'utils')));
+addAllPaths();
 
 %% Setup GUI
 bcol = [1 1 1];
@@ -44,16 +40,13 @@ h.alignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'P
 h.unalignButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [230 100 75 30], 'String', 'Unalign', ...
     'Callback', {@unalignData, h.fig(1)}, 'FontSize', 10);
 
-% null space, pca, selectivity
-h.nullButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 60 85 30], 'String', 'Null Space', ...
-    'Callback', {@subspace_opt, h.fig(1)}, 'FontSize', 10);
-
-h.pcaButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [105 60 75 30], 'String', 'PCA', ...
+% pca
+h.pcaButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [15 60 85 30], 'String', 'PCA', ...
     'Callback', {@my_pca, h.fig(1)}, 'FontSize', 10);
 
 % select units, probes
 h.unitList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
-    [15 340 120 325], 'String', {'no units'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...
+    [15 340 160 325], 'String', {'no units'} , 'Value', 1, 'BackgroundColor', [1 1 1], ...
     'Max', 3, 'Min', 1, 'Callback',  {@unitSelect, h.fig(1)});
 
 h.probeList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
@@ -138,8 +131,18 @@ guidata(h.fig(1), h);
 initPlots(h.fig(1));
 
 
+end % ObjVis
 
 
+function addAllPaths()
+addpath(genpath(fullfile(pwd, 'null_potent')));
+addpath(genpath(fullfile(pwd, 'dim_reduction')));
+addpath(genpath(fullfile(pwd, 'coding_vector')));
+addpath(genpath(fullfile(pwd, 'activity_modes')));
+addpath(genpath(fullfile(pwd, 'utils')));
+addpath(genpath(fullfile(pwd, 'guifuncs')));
+addpath(genpath(fullfile(pwd, 'funcs')));
+end % addAllPaths
 
 
 

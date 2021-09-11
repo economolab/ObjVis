@@ -24,6 +24,11 @@ for clu = 1:numel(h.obj.clu{probe})
         
         trix = find(h.filt.ix(:,i));
         spkix = ismember(h.obj.clu{probe}(clu).trial, trix);
+        if spkix == false
+            continue
+        elseif isempty(spkix)
+            continue
+        end
 
         if h.align
             N = histc(h.obj.clu{probe}(clu).trialtm_aligned(spkix), edges);
@@ -32,13 +37,16 @@ for clu = 1:numel(h.obj.clu{probe})
         end
 
         N = N(1:end-1);
-
+        if size(N,1) < size(N,2)
+            N = N';
+        end
+        
         ttPSTH(:,clu,i) = MySmooth(N./numel(trix)./dt, sm);  % trial-averaged separated by trial type
+
     end
 end
 
 psth = mean(ttPSTH,3); % trial-averaged over all trial types
-psth = normalize(psth, 'zscore');
 
 % perform pca on trial-averaged data, plot projections
 [~,proj,~,~,explained] = pca(psth);
@@ -60,50 +68,6 @@ end
 title(['All units projected onto first ' num2str(nComp) ' PCs'])
 hold off
 xlim([tmin tmax])
-
-% % t sne
-% concatenate ttpsth
-tsnePSTH = [ttPSTH(:,:,1) ; ttPSTH(:,:,2)];
-embedding = tsne(tsnePSTH);
-
-
-figure; plot(embedding(:,1),embedding(:,2),'.');
-
-% % perform pca on trial-averaged data separated by trial type, plot
-% % projections
-% proj = zeros(length(tm),numel(h.obj.clu{probe}),numel(h.filt.N));
-% figure;
-% for i = 1:h.filt.N
-%     [~,proj(:,:,i),~,~,explained] = pca(ttPSTH(:,:,i));
-%     subplot(h.filt.N,1,i)
-%     plot(tm, proj(:,1:5,i))
-%     legend(string(explained(1:5)))
-% end
-
-
-
-% R = ttPSTH(:,:,1);
-% L = ttPSTH(:,:,2);
-% 
-% Rsel = ttPSTH(:, :, 3) - R;
-% Lsel = ttPSTH(:, :, 4) - L;
-% 
-% tix = find(tm>0, 1, 'first');
-% tix = 50:450;
-% [~, ix] = sort(median(Rsel(tix, :), 1), 'descend');
-% figure; imagesc(Rsel(:, ix)');
-% 
-% R2AFC = ttPSTH(tix, :, 1);
-% L2AFC = ttPSTH(tix, :, 2);
-% RAW = ttPSTH(tix, :, 3);
-% LAW = ttPSTH(tix, :, 4);
-% 
-% Rf = median(Rsel, 1)./median(R, 1);
-% Lf = median(Lsel, 1)./median(L, 1);
-
-
-
-'hi'
 
 
 end % my_pca
