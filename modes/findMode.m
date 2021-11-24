@@ -1,25 +1,45 @@
 function findMode(~,~,fig)
-
-h = guidata(fig);
+p = guidata(fig);
+h = guidata(p.parentfig);
 
 % PARSE GUI DATA
 probe = h.probeList.Value;
-dt = 0.005;
+
+
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
+
+dt = 0.005;
 edges = tmin:dt:tmax;
 time = edges + dt/2;
 time = time(1:end-1);
-modetmin = str2double(get(h.modetmin, 'String'));
-modetmax = str2double(get(h.modetmax, 'String'));
-modeConditions = h.condTable.Data;
-modeConditions = modeConditions(~cellfun(@isempty, modeConditions));
-projConditions = h.projTable.Data;
-projConditions = projConditions(~cellfun(@isempty, projConditions));
-computation = h.modeComputation.String;
-quality = h.quality.String';
+
+ctable = p.condTable.Data;
+ptable = p.projTable.Data;
+
+modeConditions = ctable(:, 1);
+modetmin = cell2mat(ctable(:, 2));
+modetmax = cell2mat(ctable(:, 3));
+modeAlign = ctable{1, 4};
+use = ~cellfun(@isempty, modeConditions);
+
+modeConditions = modeConditions(use);
+modetmin = modetmin(use);
+modetmax = modetmax(use);
+
+projConditions = ptable(:,1);
+use = ~cellfun(@isempty, projConditions);
+
+projConditions = projConditions(use);
+clrs = cell2mat(ptable(use, 2:4));
+
+projAlign = ptable{1, 5};
+
+computation = p.modeComputation.String;
+quality = p.quality.String(p.quality.Value)'; %????
 smooth = str2double(get(h.smoothing, 'String'));
-lowFR = str2double(get(h.lowFR,'String'));
+lowFR = str2double(get(p.lowFR,'String'));
+
 
 % PREPROCESS
 % get trials to use (for projections)
@@ -27,25 +47,40 @@ trialid = findTrials(h, projConditions);
 % get clusters to use (for everything)
 cluQuality = {h.obj.clu{probe}(:).quality}';
 cluid = findClusters(cluQuality, quality);
+
 % align spikes to go cue
-h.obj = alignSpikes(h.obj,probe,'goCue');
+modeobj = alignSpikes(h.obj,probe,modeAlign);
+projobj = alignSpikes(h.obj,probe,projAlign);
 % get trial avg psth and single trial data
-h.obj = getSeq(h.obj,edges,time,dt,probe,cluid,trialid,projConditions,smooth);
+modeobj = getSeq(modeobj,edges,time,dt,probe,cluid,trialid,projConditions,smooth);
+projobj = getSeq(projobj,edges,time,dt,probe,cluid,trialid,projConditions,smooth);
+
 % remove low fr clusters
-[h.obj, cluid] = removeLowFRClusters(h.obj,cluid,lowFR);
+modeuse = findLowFRClusters(modeobj,lowFR);
+projuse = findLowFRClusters(projobj,lowFR);
+
+use = modeuse | projuse;
+
+[modeobj,~] = removeLowFRClusters(modeobj,use,cluid);
+[projobj,cluid] = removeLowFRClusters(projobj,use,cluid);
+
+
 
 % FIND MODE
 % get trials to use (for mode)
 trials = getTrialsForModeID(h,modeConditions);
 % slice trialpsth from modetmin to modetmax and find mean during time
 % period for all trials and modeConditions
-[~,e1] = min(abs(time - modetmin));
-[~,e2] = min(abs(time - modetmax));
+e1 = zeros(trials.N, 1);
+e2 = zeros(trials.N, 1);
 nTrialsCond = sum(trials.ix);
-epochMean = nan(numel(cluid),max(nTrialsCond),trials.N);
+epochMean = nan(numel(cluid),max(nTrialsCond),trials.N); % (clu,trials,cond)
+
 for i = 1:trials.N
+    [~,e1(i)] = min(abs(time - modetmin(i)));
+    [~,e2(i)] = min(abs(time - modetmax(i)));
     nTrials = nTrialsCond(i);
-    epochMean(:,1:nTrials,i) = nanmean(h.obj.trialpsth(e1:e2,:,logical(trials.ix(:,i))),1);
+    epochMean(:,1:nTrials,i) = squeeze(nanmean(modeobj.trialpsth(e1(i):e2(i),:,logical(trials.ix(:,i))),1));
 end
 % get epoch stats (mean and std dev across trials for each cluster)
 mu = nan(numel(cluid),trials.N);
@@ -67,18 +102,78 @@ sample = mode(h.obj.bp.ev.sample) - mode(h.obj.bp.ev.goCue);
 delay  = mode(h.obj.bp.ev.delay) - mode(h.obj.bp.ev.goCue);
 zeroEv  = 0; % corresponds to goCue
 
-for j = 1:numel(projConditions)
-    latent = mySmooth(h.obj.psth(:,:,j)*cd,smooth);
-    plot(h.modeax(1),time,latent,'LineWidth',2);
-    hold on
+lat.single = nan(size(projobj.trialpsth, 1), size(projobj.trialpsth, 3));
+lat.avg = nan(size(projobj.trialpsth, 1), numel(projConditions));
+
+if get(p.singleTrialCheckbox, 'Value')
+    for j = 1:size(projobj.trialpsth, 3)
+        ts = projobj.trialpsth(:,:,j);
+        lat.single(:, j) = MySmooth(ts*cd,smooth);
+    end
+end
+
+if get(p.singleTrialCheckbox, 'Value')
+    for j = 1:size(projobj.trialpsth, 3)
+        for i = 1:numel(projConditions)
+            if ismember(j, trialid{i})
+                c = clrs(i, :);
+                c = c+(1-c)*0.5;
+                plot(p.modeax(1),time,lat.single(:,j),'LineWidth',0.5, 'Color', c);
+                hold on;
+            end
+        end
+    end
+end
+
+for i = 1:numel(projConditions)
+    lat.avg(:,i) = MySmooth(projobj.psth(:,:,i)*cd,smooth);
+end
+
+for i = 1:numel(projConditions)
+    plot(p.modeax(1),time,lat.avg(:,i),'LineWidth',2, 'Color', clrs(i,:));
+    hold on;
 end
 xline(sample,'k--','LineWidth',0.5);
 xline(delay,'k--','LineWidth',0.5);
 xline(zeroEv,'k--','LineWidth',0.5);
 xlim([time(1),time(end)])
-legend(projConditions,'Location','best');
+% legend(projConditions,'Location','best');
 hold off
 
+% % 
+derivthresh = 0.3;  %If the velocity of the jaw crosses this threshold, the jaw is considered to be moving
+jaw = nan(numel(edges), size(modeobj.trialpsth, 3));
+
+traj = h.obj.traj{1};
+for i = 1:size(modeobj.trialpsth, 3)
+    if isnan(traj(i).NdroppedFrames )
+        continue;
+    end
+    ts = MySmooth(traj(i).ts(:, 2, 2), 21);
+    tsinterp = interp1(traj(i).frameTimes-0.5-mode(h.obj.bp.ev.goCue), ts, edges);   %Linear interpolation of jaw position to keep number of time points consistent across trials
+    basederiv = nanmedian(diff(tsinterp));          %Find the median jaw velocity (aka baseline)
+    
+    %Find when the difference between the jaw velocity and the
+    %baseline jaw
+    %velocity is above a given threshold (when is jaw moving?)
+    jaw(2:end, i) = abs(diff(tsinterp)-basederiv);%
+end
+
+ix = 400:600;
+jawVel = mean(jaw(ix, :), 1);
+proj = mean(lat.single(ix, :), 1);
+
+
+figure; hold on;
+plot(jawVel(trialid{1}), proj(trialid{1}), 'b.');
+plot(jawVel(trialid{2}), proj(trialid{2}), 'r.');
+xlabel('Avg jaw velocity');
+ylabel('Choice mode');
+legend('R trials','L trials');
+
+
+legend(projConditions,'Location','best');
+hold off
 
 end % findMode
 %%
@@ -90,6 +185,9 @@ if ~isfield(obj.bp.autowater, 'nums')
     tmp = obj.bp.autowater;
     obj.bp = rmfield(obj.bp, 'autowater');
     obj.bp.autowater.nums = tmp + (tmp-1)*-2;
+    tmp = obj.bp.autowater.nums;
+    obj.bp.autowater = rmfield(obj.bp.autowater,'nums');
+    obj.bp.autowater = tmp;
 end
 
 varnames = getStructVarNames(h);
@@ -103,6 +201,11 @@ end
 
 mask = zeros(obj.bp.Ntrials, numel(conditions));
 
+if isfield(autowater, 'nums')
+    tmp = autowater.nums;
+    autowater = rmfield(autowater, 'nums');
+    autowater = tmp + (tmp-1)*-2;
+end
 
 for i = 1:numel(conditions)
     mask(:,i) = eval(conditions{i});
@@ -149,8 +252,10 @@ for i = 1:numel(cluid)
         
         N = histc(obj.clu{probe}(curClu).trialtm_aligned(spkix), edges);
         N = N(1:end-1);
-        
-        obj.psth(:,i,j) = mySmooth(N./numel(trix)./dt, smooth);  % trial-averaged separated by trial type
+        if size(N,1) < size(N,2)
+            N = N';
+        end
+        obj.psth(:,i,j) = MySmooth(N./numel(trix)./dt, smooth);  % trial-averaged separated by trial type
         
     end
 end
@@ -168,16 +273,16 @@ for i = 1:numel(cluid)
         if size(N,2) > size(N,1)
             N = N'; % make sure N is a column vector
         end
-        
-        obj.trialpsth(:,i,j) = mySmooth(N./dt,smooth);
-        
+
+        obj.trialpsth(:,i,j) = MySmooth(N./dt,smooth);
+
     end
 end
 
 
 end % getSeq
 %%
-function [obj,cluid] = removeLowFRClusters(obj,cluid,lowFR)
+function use = findLowFRClusters(obj,lowFR)
 % % Remove low-firing rate units, e.g., all those firing less than 5
 %   spikes per second on average across all trials.
 %
@@ -187,6 +292,16 @@ function [obj,cluid] = removeLowFRClusters(obj,cluid,lowFR)
 
 meanFRs = mean(mean(obj.psth,3));
 use = meanFRs > lowFR;
+
+end % removeLowFRClusters
+
+function [obj,cluid] = removeLowFRClusters(obj,use,cluid)
+% % Remove low-firing rate units, e.g., all those firing less than 5
+%   spikes per second on average across all trials.
+%
+%   The fitted observation noise (diagonal element of R) for a
+%   low-firing rate unit will be small, so the neural trajectory may
+%   show a deflection each time the neuron spikes.
 
 % remove low fr clusters
 cluid = cluid(use);

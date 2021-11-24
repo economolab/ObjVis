@@ -15,6 +15,8 @@ hold(h.ax(2), 'off');
 
 sm = str2double(get(h.smoothing, 'String'));
 
+psth = zeros(numel(tm), h.filt.N);
+
 for i = 1:h.filt.N
     
     if ~h.filterTable.Data{i, 5}
@@ -32,13 +34,14 @@ for i = 1:h.filt.N
     
     N = N(1:end-1);
     
+
     if size(N,1) < size(N,2)
         N = N';
     end
     
-    psth = MySmooth(N./numel(trix)./dt, sm);
+    psth(:,i) = MySmooth(N./numel(trix)./dt, sm);
 
-    plot(h.ax(2), tm, psth, '-', 'Linewidth', 2, 'Color', h.filt.clr(i,:));
+    plot(h.ax(2), tm, psth(:, i), '-', 'Linewidth', 2, 'Color', h.filt.clr(i,:));
     hold(h.ax(2), 'on');
     axis(h.ax(2), 'tight');
     
