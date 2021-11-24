@@ -5,6 +5,7 @@ h = guidata(fig);
 varnames = getStructVarNames(h);
 for i = 1:numel(varnames)
     eval([varnames{i} ' = h.obj.bp.' varnames{i} ';']);
+    eval([varnames{i} '(isnan(' varnames{i} ')) =' '0' ''';']); % impute nans with 0's (tagging trials)
     
     if eval(['numel(' varnames{i} ')==h.obj.bp.Ntrials && isrow(' varnames{i} ')'])
         eval([varnames{i} '=' varnames{i} ''';']);
