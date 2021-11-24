@@ -109,5 +109,4 @@ uicontrol(p.fig, 'Style', 'pushbutton', 'Units', 'Normalized', 'Position', ...
 guidata(p.fig, p);
 
 
-
 end % findModeGUI

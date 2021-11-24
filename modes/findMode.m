@@ -41,7 +41,6 @@ smooth = str2double(get(h.smoothing, 'String'));
 lowFR = str2double(get(p.lowFR,'String'));
 
 
-
 % PREPROCESS
 % get trials to use (for projections)
 trialid = findTrials(h, projConditions);
@@ -64,6 +63,7 @@ use = modeuse | projuse;
 
 [modeobj,~] = removeLowFRClusters(modeobj,use,cluid);
 [projobj,cluid] = removeLowFRClusters(projobj,use,cluid);
+
 
 
 % FIND MODE
@@ -171,8 +171,9 @@ xlabel('Avg jaw velocity');
 ylabel('Choice mode');
 legend('R trials','L trials');
 
-% 'hi'
 
+legend(projConditions,'Location','best');
+hold off
 
 end % findMode
 %%
@@ -255,7 +256,6 @@ for i = 1:numel(cluid)
             N = N';
         end
         obj.psth(:,i,j) = MySmooth(N./numel(trix)./dt, smooth);  % trial-averaged separated by trial type
-
         
     end
 end
@@ -273,9 +273,9 @@ for i = 1:numel(cluid)
         if size(N,2) > size(N,1)
             N = N'; % make sure N is a column vector
         end
-        
+
         obj.trialpsth(:,i,j) = MySmooth(N./dt,smooth);
-        
+
     end
 end
 
@@ -303,6 +303,7 @@ function [obj,cluid] = removeLowFRClusters(obj,use,cluid)
 %   low-firing rate unit will be small, so the neural trajectory may
 %   show a deflection each time the neuron spikes.
 
+% remove low fr clusters
 cluid = cluid(use);
 obj.psth = obj.psth(:,use,:);
 obj.trialpsth = obj.trialpsth(:,use,:);
