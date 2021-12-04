@@ -29,14 +29,6 @@ eventNames{end+1} = 'moveOnset';
 eventNames{end+1} = 'firstLick';
 eventNames{end+1} = 'lastLick';
 
-% set epoch names in projection table epochs
-temp = cell(1,h.filt.N);
-temp(:) = {'presample'};
-temp = temp;
-h.filterTable.Data(:,6) = temp;
-epochNames = {'presample' eventNames{2:5}};
-h.filterTable.ColumnFormat = ({[],[],[],[],[],epochNames});
-
 
 guidata(fig, h);
 tableChange([], [], fig);

@@ -62,11 +62,11 @@ h.probeList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Positi
     'Max', 3, 'Min', 1, 'Callback',  {@probeSelect, h.fig(1)});
 
 % setup filter table
-tabdat = {'R&hit', 0, 0, 1, true; ...
-         'L&hit', 1, 0, 0, true};
+tabdat = {'R&hit', 0, 0, 1, true, true; ...
+         'L&hit', 1, 0, 0, true, true};
      
-h.filterTable = uitable(h.fig(1), 'Data' ,tabdat,'ColumnWidth',{150,40,40,40,60}, 'Position', [15 195, 450, 125], ...
-    'ColumnName', {'Filter','Red', 'Green', 'Blue', 'Enabled'}, 'ColumnEditable', true, ...
+h.filterTable = uitable(h.fig(1), 'Data' ,tabdat,'ColumnWidth',{150,40,40,40,60,60}, 'Position', [15 195, 450, 125], ...
+    'ColumnName', {'Filter','Red', 'Green', 'Blue', 'Enabled', 'ErrorBar'}, 'ColumnEditable', true, ...
     'CellEditCallback', {@tableChange, h.fig(1)}, 'ColumnFormat', ({[],[],[],[]}));
 
 % time
@@ -123,6 +123,8 @@ uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [325 455 90 22], 'Stri
     'FontSize', 12, 'HorizontalAlignment', 'Right', 'BackgroundColor', h.bcol);
 h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 455 50 25], 'String', 0, 'Callback', {@updateVideo, h.fig});
+
+
 
 
 
