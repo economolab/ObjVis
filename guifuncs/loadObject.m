@@ -57,10 +57,6 @@ eventNames{end+1} = 'lastLick';
 eventNames{end+1} = 'jawOnset';
 set(h.alignMenu, 'Value', 1, 'String', eventNames);
 
-% set epoch names in projection table epochs
-epochNames = {'presample' eventNames{2:5}};
-h.filterTable.ColumnFormat = ({[],[],[],[],[],epochNames});
-
 guidata(fig, h);
 probeSelect([], [], fig);
 updateBehav([], [], fig);
