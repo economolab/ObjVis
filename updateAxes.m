@@ -15,6 +15,8 @@ unit = get(h.unitList, 'Value');
 
 clu = h.obj.clu{probe}(unit);
 
+h.quality.String = clu.quality;
+
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
 
