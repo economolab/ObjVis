@@ -124,8 +124,12 @@ uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [325 455 90 22], 'Stri
 h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 455 50 25], 'String', 0, 'Callback', {@updateVideo, h.fig});
 
-
-
+uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [176,640,64,23], 'String', 'Quality:', ...
+    'FontSize', 12, 'HorizontalAlignment', 'Right', 'BackgroundColor', h.bcol);
+h.quality = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
+    [249,635,87,30], 'String', '');
+h.changeQuality = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [192,593,143,32], 'String', 'Edit Quality', ...
+    'Callback', {@changeQuality, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
 
 
 
