@@ -1,4 +1,4 @@
-function out = MySmooth(x, N)
+function out = mySmooth(x, N)
 % operates on first dimension only
 
 if N==1

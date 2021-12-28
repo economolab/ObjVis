@@ -41,7 +41,7 @@ for i = 1:h.filt.N
         N = N';
     end
     
-    psth(:,i) = MySmooth(N./numel(trix)./dt, sm);
+    psth(:,i) = mySmooth(N./numel(trix)./dt, sm);
 
     if ~h.filterTable.Data{i, 6}
         %  plot psth alone (no error bars)
