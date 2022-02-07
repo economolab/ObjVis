@@ -4,6 +4,9 @@ h = guidata(fig);
 
 probe = get(h.probeList, 'Value');
 
+% if you change probes, let's assume that the data is not aligned/warped
+h.aligned = 0;
+h.warped = 0;
 
 Nunits = numel(h.obj.clu{probe});
 

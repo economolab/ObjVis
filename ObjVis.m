@@ -3,7 +3,11 @@ close all;
 
 %% add paths
 try
-    addpath(genpath('C:\Code\ObjVis'))
+    if ispc
+        addpath(genpath('C:\Code\ObjVis'))
+    else
+        addpath(genpath('/Users/Munib/Documents/Economo-Lab/code/ObjVis'));
+    end
 catch
     error('ObjVis path not found')
 end
@@ -124,8 +128,10 @@ uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [325 455 90 22], 'Stri
 h.vidOffset = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
     [425 455 50 25], 'String', 0, 'Callback', {@updateVideo, h.fig});
 
-
-
+% time warp
+h.warpButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [310 100 75 30], 'String', 'Time Warp', ...
+    'Callback', {@timeWarpGUI, h.fig(1)}, 'FontSize', 10);
+h.warped = 0;
 
 
 
