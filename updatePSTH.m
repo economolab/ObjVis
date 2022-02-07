@@ -18,7 +18,7 @@ hold(h.ax(2), 'on');
 sm = str2double(get(h.smoothing, 'String'));
 
 psth = zeros(numel(tm), h.filt.N);
-stdev = zeros(numel(tm), h.filt.N);
+stderr = zeros(numel(tm), h.filt.N);
 for i = 1:h.filt.N
     
     if ~h.filterTable.Data{i, 5}
@@ -43,7 +43,7 @@ for i = 1:h.filt.N
         N = N';
     end
     
-    psth(:,i) = MySmooth(N./numel(trix)./dt, sm);
+    psth(:,i) = mySmooth(N./numel(trix)./dt, sm);
 
     if ~h.filterTable.Data{i, 6}
         %  plot psth alone (no error bars)

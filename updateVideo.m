@@ -38,10 +38,10 @@ for i = 1:h.filt.N
                 case 1
                     dat(:,k) = (1:Nframes)./camRate;
                 case 2
-                    dat(:,k) = MySmooth(vid(trix(j)).ts(:, 1, feat), sm);
+                    dat(:,k) = mySmooth(vid(trix(j)).ts(:, 1, feat), sm);
                     dat(p<0.9, k) = NaN;
                 case 3
-                    dat(:,k) = MySmooth(vid(trix(j)).ts(:, 2, feat), sm);
+                    dat(:,k) = mySmooth(vid(trix(j)).ts(:, 2, feat), sm);
                     dat(p<0.9, k) = NaN;
             end
         end

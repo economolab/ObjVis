@@ -133,6 +133,13 @@ h.warpButton = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Po
     'Callback', {@timeWarpGUI, h.fig(1)}, 'FontSize', 10);
 h.warped = 0;
 
+uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [176,640,64,23], 'String', 'Quality:', ...
+    'FontSize', 12, 'HorizontalAlignment', 'Right', 'BackgroundColor', h.bcol);
+h.quality = uicontrol('Style', 'Edit', 'Units', 'Pixels', 'Position', ...
+    [249,635,87,30], 'String', '');
+h.changeQuality = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 'Position', [192,593,143,32], 'String', 'Edit Quality', ...
+    'Callback', {@changeQuality, h.fig(1)}, 'FontSize', 12, 'FontWeight', 'Bold');
+
 
 
 %% Init GUI
