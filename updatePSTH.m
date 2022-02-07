@@ -18,7 +18,7 @@ hold(h.ax(2), 'on');
 sm = str2double(get(h.smoothing, 'String'));
 
 psth = zeros(numel(tm), h.filt.N);
-stdev = zeros(numel(tm), h.filt.N);
+stderr = zeros(numel(tm), h.filt.N);
 for i = 1:h.filt.N
     
     if ~h.filterTable.Data{i, 5}
@@ -66,9 +66,9 @@ for i = 1:h.filt.N
             trialpsth(:,j) = mySmooth(N./dt,sm);
             
         end
-        stdev(:,i) = std(trialpsth,[],2);
+        stderr(:,i) = std(trialpsth,[],2) ./ sqrt(numel(trix));
         
-        shadedErrorBar(tm, psth(:,i), stdev(:,i), {'Color',h.filt.clr(i,:),'LineWidth',2},0.5, h.ax(2));
+        shadedErrorBar(tm, psth(:,i), stderr(:,i), {'Color',h.filt.clr(i,:),'LineWidth',2},0.5, h.ax(2));
     end
     
     hold(h.ax(2), 'on');
