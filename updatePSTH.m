@@ -30,6 +30,8 @@ for i = 1:h.filt.N
     
     if h.align
         N = histc(clu.trialtm_aligned(spkix), edges);
+    elseif h.warped
+        N = histc(clu.trialtm_warped(spkix), edges);
     else
         N = histc(clu.trialtm(spkix), edges);
     end
@@ -63,7 +65,7 @@ for i = 1:h.filt.N
                 N = N'; % make sure N is a column vector
             end
             
-            trialpsth(:,j) = mySmooth(N./dt,sm);
+            trialpsth(:,j) = MySmooth(N./dt,sm);
             
         end
         stderr(:,i) = std(trialpsth,[],2) ./ sqrt(numel(trix));
@@ -96,4 +98,6 @@ title(h.ax(2), h.unitList.String{h.unitList.Value});
 tmin = str2double(get(h.tmin, 'String'));
 tmax = str2double(get(h.tmax, 'String'));
 xlim(h.ax(2), [tmin, tmax]);
+
+
 
