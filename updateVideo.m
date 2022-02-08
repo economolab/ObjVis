@@ -38,16 +38,16 @@ for i = 1:h.filt.N
                 case 1
                     dat(:,k) = (1:Nframes)./camRate;
                 case 2
-                    dat(:,k) = mySmooth(vid(trix(j)).ts(:, 1, feat), sm);
+                    dat(:,k) = MySmooth(vid(trix(j)).ts(:, 1, feat), sm);
                     dat(p<0.9, k) = NaN;
                 case 3
-                    dat(:,k) = mySmooth(vid(trix(j)).ts(:, 2, feat), sm);
+                    dat(:,k) = MySmooth(vid(trix(j)).ts(:, 2, feat), sm);
                     dat(p<0.9, k) = NaN;
             end
         end
         
         % plot
-        if h.align
+        if h.align && h.psthDataList.Value == 2
             evName = h.alignMenu.String{h.alignMenu.Value};
             plot(h.ax(4), dat(:,1) - h.obj.bp.ev.(evName)(trix(j)), yoff + dat(:,2), '-', 'Color', h.filt.clr(i,:));
         else

@@ -59,8 +59,10 @@ for cluix = 1:numel(h.obj.clu{probe})
     
 end
 
-
+% mark that we've warped data, set warp checkbox to visible and checked,
+% turn off others
 h.warped = 1;
+h.psthDataList.Value = 3;
 
 f = msgbox('Warping Completed');
 pause(1);
@@ -69,6 +71,16 @@ delete(f);
 close(figure(535))
 
 guidata(h.fig(1), h);
+
+probe = get(h.probeList, 'Value');
+unit = get(h.unitList, 'Value');
+
+clu = h.obj.clu{probe}(unit);
+
+updateRaster(h.fig(1), clu);
+updatePSTH(h.fig(1), clu);
+updateBehav([],[],h.fig(1));
+updateVideo([],[],h.fig(1))
 
 
 end % timeWarp

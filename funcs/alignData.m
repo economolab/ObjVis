@@ -3,7 +3,9 @@ function alignData(~, ~, fig)
 
 h = guidata(fig);
 
+% mark that we've aligned data
 h.align = 1;
+h.psthDataList.Value = 2;
 
 probe = get(h.probeList, 'Value');
 
