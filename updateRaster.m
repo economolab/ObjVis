@@ -22,20 +22,22 @@ for i = h.filt.N:-1:1
     delay = median(h.obj.bp.ev.delay(trix));
     goCue = median(h.obj.bp.ev.goCue(trix));
     
-    if h.align
+    if h.align && h.psthDataList.Value == 2
         plot(h.ax(1), clu.trialtm_aligned(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
-    else
+    elseif h.warped && h.psthDataList.Value == 3
+        plot(h.ax(1), clu.trialtm_warped(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
+    elseif h.psthDataList.Value == 1
         plot(h.ax(1), clu.trialtm(spkix), trialOffset+trialcnt(spkix), '.', 'Color', h.filt.clr(i,:));
     end
     axis(h.ax(1), 'tight');
     hold(h.ax(1), 'on');
     
-    if ~h.align
+    if h.align && h.psthDataList.Value == 2
+        plot(h.ax(1), [0 0], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
+    else
         plot(h.ax(1), [sample sample], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
         plot(h.ax(1), [delay delay], [trialOffset trialOffset+numel(trix)], 'c-', 'LineWidth', 1);
         plot(h.ax(1), [goCue goCue], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
-    else
-         plot(h.ax(1), [0 0], [trialOffset trialOffset+numel(trix)], 'k-', 'LineWidth', 1);
     end
     
     trialOffset = trialOffset+numel(trix);
@@ -44,7 +46,7 @@ end
 
 xlim(h.ax(1), [tmin, tmax]);
 
-if h.align
+if h.align && h.psthDataList.Value == 2
     evList = get(h.alignMenu, 'String');
     evName = evList{get(h.alignMenu, 'Value')};
     xlabel(h.ax(1), ['Time (s) aligned to ' evName]);

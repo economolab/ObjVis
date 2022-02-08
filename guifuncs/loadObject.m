@@ -61,3 +61,9 @@ guidata(fig, h);
 probeSelect([], [], fig);
 updateBehav([], [], fig);
 cameraSelect([], [], fig);
+
+guifig = figure(532);
+ax = guifig.CurrentAxes;
+ax.Visible = 'off';
+
+

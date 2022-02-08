@@ -28,12 +28,15 @@ for i = 1:h.filt.N
     trix = find(h.filt.ix(:,i));
     spkix = ismember(clu.trial, trix);
     
-    if h.align
+    if h.align && h.psthDataList.Value == 2
         N = histc(clu.trialtm_aligned(spkix), edges);
-    elseif h.warped
+    elseif h.warped && h.psthDataList.Value == 3
         N = histc(clu.trialtm_warped(spkix), edges);
-    else
+    elseif h.psthDataList.Value == 1
         N = histc(clu.trialtm(spkix), edges);
+    else
+        f = msgbox('Make sure to check which data to use for PSTH');
+        return
     end
     
     N = N(1:end-1);
@@ -43,7 +46,7 @@ for i = 1:h.filt.N
         N = N';
     end
     
-    psth(:,i) = mySmooth(N./numel(trix)./dt, sm);
+    psth(:,i) = MySmooth(N./numel(trix)./dt, sm);
 
     if ~h.filterTable.Data{i, 6}
         %  plot psth alone (no error bars)
@@ -84,12 +87,13 @@ goCue = median(h.obj.bp.ev.goCue(any(h.filt.ix, 2)));
 
 yl = ylim(h.ax(2));
 
-if ~h.align
+if h.align && h.psthDataList.Value == 2
+    plot(h.ax(1), [0 0], yl, 'k-', 'LineWidth', 1);
+    
+else
     plot(h.ax(2), [sample sample], yl, 'c-', 'LineWidth', 1);
     plot(h.ax(2), [delay delay], yl, 'c-', 'LineWidth', 1);
     plot(h.ax(2), [goCue goCue], yl, 'k-', 'LineWidth', 1);
-else
-     plot(h.ax(1), [0 0], yl, 'k-', 'LineWidth', 1);
 end
 
 ylabel(h.ax(2), 'Firing rate (Hz)');

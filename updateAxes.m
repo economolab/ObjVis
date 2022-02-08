@@ -33,6 +33,7 @@ updatePSTH(fig, clu);
 updateVideo([],[],fig);
 updateISI(fig, clu);
 updateWav(fig, clu);
+
 figure(h.fig(1))
 
 if h.linkAxes.Value && (h.feat_popupmenu(1).Value==1)
