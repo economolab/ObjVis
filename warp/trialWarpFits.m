@@ -1,26 +1,25 @@
-function p = trialWarpFits(lickTm,medianLickTm,obj,nLicks)
+function p = trialWarpFits(lickStart,lickEnd,lickDur,med,obj,nLicks)
 
 
 p = cell(obj.bp.Ntrials,nLicks);
 for trix = 1:obj.bp.Ntrials
-    lt = lickTm{trix}; % current trial post go cue lick times
-    
-    for lix = 1:numel(lt) % lick index
-        mlt = medianLickTm(lix); % median lick time for current lick
+    ls = lickStart{trix}; % current trial lick start times
+    le = lickEnd{trix}; % current trial lick end times
+    ld = lickDur{trix}; % current trial lick durations
+        
+    for lix = 1:numel(ls) % lick index
+        % median values for current lick
+        mls = med.lickStart(lix); % median lick start time
+        mle = med.lickEnd(lix); % median lick end time
+        mld = med.lickDur(lix); % median lick duration
         
         % warp lick times
-        % - 1st lick: warp from goCue:lick(1)
-        % - subsequent licks: warp from lick(x-1):lick(x)
-        if lix == 1
-            x = [obj.bp.ev.goCue(trix) lt(lix)];
-            y = [mode(obj.bp.ev.goCue) mlt];
-        else
-            x = [lt(lix-1) lt(lix)];
-            y = [medianLickTm(lix-1) mlt];
-        end
-        
-        % fit original time to warped time (median lick time for current
-        % lick)
+        % - from (lick start time, lick end time) to (median lick start
+        % time, median lick end time)
+        x = [ls(lix) le(lix)];
+        y = [mls mle];
+
+        % fit original time to warped time
         p{trix,lix} = polyfit(x,y,1);
         
     end

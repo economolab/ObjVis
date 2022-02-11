@@ -11,16 +11,16 @@ nLicks = str2double(p.nLicks.String);
 %% time warping
 
 % get first params.Nlicks lick times, for each trial
-lickTm = findLickTimes(h.obj,nLicks);
+[lickStart,lickEnd,lickDur] = findLickTimes(h.obj,nLicks);
 
 %----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----
 %find median lick time for each lick across trials
 % only using trials where a lick was present in median calculation
-medianLickTm = findMedianLickTimes(lickTm, nLicks);
+med = findMedianLickTimes(lickStart,lickEnd,lickDur, nLicks);
 
 %----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----
 % find fit for each trial and each lick
-pfit = trialWarpFits(lickTm,medianLickTm,h.obj,nLicks);
+pfit = trialWarpFits(lickStart,lickEnd,lickDur,med,h.obj,nLicks);
 
 %----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----%----
 % warp spike times for each cluster (only spike times between go cue and first params.nLicks licks get
@@ -35,20 +35,19 @@ for cluix = 1:numel(h.obj.clu{probe})
         spkmask = ismember(h.obj.clu{probe}(cluix).trial,trix);
         spkix = find(spkmask);
         spktm = h.obj.clu{probe}(cluix).trialtm(spkmask);
-        
-        lt = lickTm{trix}; % current trial post go cue lick times
-        
-        for lix = 1:numel(lt) % lick index
+                
+        for lix = 1:numel(lickStart{trix}) % lick index for current trial
             p_cur = pfit{trix,lix}; % current fit parameters for current trial and lick number
             
-            if lix == 1
-                % find spike ix b/w go cue and lick(1)
-                mask = (spktm>h.obj.bp.ev.goCue(trix) & spktm<lt(lix));
-            else
-                % find spike ix b/w lick(x-1) and lick(x)
-                mask = (spktm>lt(lix-1) & spktm<lt(lix));
-            end
-            tm = spktm(mask); % spike times between gocue and licks or previous and current lick
+            ls = lickStart{trix}(lix); % current trial lick(lix) start times
+            le = lickEnd{trix}(lix); % current trial lick(lix) end times
+            ld = lickDur{trix}(lix); % current trial lick(lix) durations
+            
+            % find spike ix b/w ls and le (these are the spikes that will
+            % be time warped)
+            mask = (spktm>ls) & (spktm<le);
+            
+            tm = spktm(mask); 
             
             % warp
             warptm = polyval(p_cur,tm);
