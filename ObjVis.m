@@ -144,12 +144,6 @@ h.changeQuality = uicontrol(h.fig(1), 'Style', 'pushbutton', 'Units', 'Pixels', 
 % trialtm_warped)
 uicontrol('Style', 'Text', 'Units', 'Pixels', 'Position', [193,415,122,24], 'String', 'Data to use for PSTH:', ...
     'FontSize', 12, 'HorizontalAlignment', 'Right', 'BackgroundColor', h.bcol);
-% h.trialtm_check = uicontrol(h.fig(1), 'Style', 'checkbox', 'Units', 'Pixels', 'Position', [195,336,66,40], 'String', 'trialtm', ...,
-%     'FontSize', 12, 'BackgroundColor', h.bcol, 'Value', 1, 'Callback',{@changeDataCheck, h.fig(1)});
-% h.trialtm_aligned_check = uicontrol(h.fig(1), 'Style', 'checkbox', 'Units', 'Pixels', 'Position', [263,336,113,40], 'String', 'trialtm_aligned', ...,
-%     'FontSize', 12, 'BackgroundColor', h.bcol,'Visible',0, 'Callback',{@changeDataCheck, h.fig(1)});
-% h.trialtm_warped_check = uicontrol(h.fig(1), 'Style', 'checkbox', 'Units', 'Pixels', 'Position', [374,335,112,40], 'String', 'trialtm_warped', ...,
-%     'FontSize', 12, 'BackgroundColor', h.bcol,'Visible',0, 'Callback',{@changeDataCheck, h.fig(1)});
 
 h.psthDataList = uicontrol(h.fig(1), 'Style', 'listbox', 'Units', 'Pixels', 'Position', ...
     [195,336,127,77], 'String', {'trialtm','trialtm_aligned','trialtm_warped'} , 'Value', 1, 'BackgroundColor', [1 1 1], 'FontSize',12, ...
