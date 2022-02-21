@@ -35,19 +35,23 @@ for cluix = 1:numel(h.obj.clu{probe})
         spkmask = ismember(h.obj.clu{probe}(cluix).trial,trix);
         spkix = find(spkmask);
         spktm = h.obj.clu{probe}(cluix).trialtm(spkmask);
+        
+        gc = h.obj.bp.ev.goCue(trix);
+        ls = lickStart{trix}; % current trial lick(lix) start times
+        le = lickEnd{trix}; % current trial lick(lix) end times
+        ld = lickDur{trix}; % current trial lick(lix) durations
                 
         for lix = 1:numel(lickStart{trix}) % lick index for current trial
             p_cur = pfit{trix,lix}; % current fit parameters for current trial and lick number
             
-            ls = lickStart{trix}(lix); % current trial lick(lix) start times
-            le = lickEnd{trix}(lix); % current trial lick(lix) end times
-            ld = lickDur{trix}(lix); % current trial lick(lix) durations
+            % find spike ix b/w to warp
+            if lix==1
+                mask = (spktm>=gc) & (spktm<=le(lix));
+            else
+                mask = (spktm>le(lix-1)) & (spktm<=le(lix));
+            end
             
-            % find spike ix b/w ls and le (these are the spikes that will
-            % be time warped)
-            mask = (spktm>ls) & (spktm<le);
-            
-            tm = spktm(mask); 
+            tm = spktm(mask);
             
             % warp
             warptm = polyval(p_cur,tm);

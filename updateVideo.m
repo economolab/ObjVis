@@ -46,6 +46,7 @@ for i = 1:h.filt.N
             end
         end
         
+        
         % plot
         if h.align && h.psthDataList.Value == 2
             evName = h.alignMenu.String{h.alignMenu.Value};
