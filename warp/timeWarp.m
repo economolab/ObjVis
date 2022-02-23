@@ -42,7 +42,7 @@ h.obj = warpSpikes(h.obj,probe,jawStart,med,pfit);
 h.obj = warpVideo(h.obj,jawStart,med,pfit);
 
 % warp bpod lick contact times
-h.obj = warpRaster(h.obj,jawStart,med,pfit);
+h.obj = warpLickRaster(h.obj,jawStart,med,pfit);
 
 %% old time warping
 

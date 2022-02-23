@@ -3,7 +3,7 @@ function obj = warpSpikes(obj,probe,jawStart,med,pfit)
 dt = 1/400;
 
 for cluix = 1:numel(obj.clu{probe})
-    disp(['Warping spikes for cluster ' num2str(cluix) ' / ' num2str(numel(obj.clu{probe}))])
+%     disp(['Warping spikes for cluster ' num2str(cluix) ' / ' num2str(numel(obj.clu{probe}))])
     obj.clu{probe}(cluix).trialtm_warped = obj.clu{probe}(cluix).trialtm;
     for trix = 1:obj.bp.Ntrials
         % find spike times for current trial

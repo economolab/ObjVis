@@ -1,4 +1,4 @@
-function obj = warpRaster(obj,jawStart,med,pfit)
+function obj = warpLickRaster(obj,jawStart,med,pfit)
 
 dt = 1/400;
 
