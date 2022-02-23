@@ -11,7 +11,7 @@ uicontrol('Style', 'Text', 'Units', 'normalized', 'Position', [0.131012658227848
     'FontSize', 14, 'BackgroundColor', h.bcol);
 
 p.nLicks = uicontrol('Style', 'Edit', 'Units', 'normalized', 'Position', ...
-    [0.318987341772152,0.465577889447236,0.35,0.2], 'String', 7);
+    [0.318987341772152,0.465577889447236,0.35,0.2], 'String', 20);
 
 
 % EXECUTE

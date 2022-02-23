@@ -36,7 +36,11 @@ for i = 1:h.filt.N
         for k = 1:2
             switch var(k)
                 case 1
-                    dat(:,k) = (1:Nframes)./camRate;
+                    if h.warped && h.psthDataList.Value == 3
+                        dat(:,k) = vid(trix(j)).frameTimes_warped;
+                    else
+                        dat(:,k) = vid(trix(j)).frameTimes - 0.5;
+                    end
                 case 2
                     dat(:,k) = MySmooth(vid(trix(j)).ts(:, 1, feat), sm);
                     dat(p<0.9, k) = NaN;
@@ -45,6 +49,7 @@ for i = 1:h.filt.N
                     dat(p<0.9, k) = NaN;
             end
         end
+        
         
         % plot
         if h.align && h.psthDataList.Value == 2

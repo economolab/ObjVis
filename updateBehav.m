@@ -26,8 +26,13 @@ for i = h.filt.N:-1:1
     for j = 1:numel(trix)
         trialOffset = trialOffset+1;
                     
-        lickL =  ev.lickL{trix(j)};
-        lickR =  ev.lickR{trix(j)};
+        if h.warped && h.psthDataList.Value == 3
+            lickL = ev.lickL_warped{trix(j)};
+            lickR = ev.lickR_warped{trix(j)};
+        else
+            lickL =  ev.lickL{trix(j)};
+            lickR =  ev.lickR{trix(j)};
+        end
         
         sample = h.obj.bp.ev.sample(trix(j));
         delay = h.obj.bp.ev.delay(trix(j));
