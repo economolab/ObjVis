@@ -30,9 +30,9 @@ med = struct();
 % [h.obj,med] = warpDelayPeriod(h.obj,probe,med);
 % [h.obj,med] = warpGoCuePeriod(h.obj,probe,med);
 
-jawStart = getJawTimes(view,feat,h.obj,opts,nLicks); % jaw oscillations proxy for lick times
+[jawStart, crosstm] = getJawTimes(view,feat,h.obj,opts,nLicks); % jaw oscillations proxy for lick times
 med = findMedianJawTimes(med,jawStart,nLicks);
-pfit = trialWarpFits_Jaw(jawStart,med,h.obj,nLicks);
+pfit = trialWarpFits_Jaw(jawStart, crosstm,med,h.obj,nLicks);
 
 % warp spike times for each cluster (only spike times between go cue and first params.nLicks licks get
 % warped)
